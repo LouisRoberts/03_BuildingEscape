@@ -52,10 +52,12 @@ Binaries
 Build
 Intermediate
 DerivedDataCache
+.vs
 *.log
 *.opensdf
 *.sln
 *.suo
+*.VC.db
 BuildingEscape.VC.db
 
 
