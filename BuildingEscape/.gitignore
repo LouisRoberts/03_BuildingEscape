@@ -58,6 +58,8 @@ DerivedDataCache
 *.sln
 *.suo
 *.VC.db
+*.VC.opendb
+*.sln
 BuildingEscape.VC.db
 
 
