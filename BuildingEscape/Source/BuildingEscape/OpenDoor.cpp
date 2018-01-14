@@ -1,8 +1,12 @@
 // Copyrighjt RobertsConsulting
 
 #include "OpenDoor.h"
+#include "Components/PrimitiveComponent.h"
+#include "Containers/Array.h"
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
+
+#define OUT
 
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
@@ -18,8 +22,6 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 void UOpenDoor::OpenDoor()
@@ -40,8 +42,9 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	float CurrentDoorTime = GetWorld()->GetTimeSeconds();
+	
 	// Poll trigger Volume
-	if(PressurePlate->IsOverlappingActor(ActorThatOpens))
+	if(GetTotalMassOfActorsOnPlate() > 25.f)
 	{
 		// If the actor that opens is in the volume
 		OpenDoor();
@@ -53,5 +56,21 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	{
 		CloseDoor();
 	}
+}
+
+
+// Returns total mass in kilograms
+float UOpenDoor::GetTotalMassOfActorsOnPlate()
+{
+	float TotalMass = 0.f;
+	// iterate overlapping actors
+	TArray<AActor*> OverlappingActors;
+	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
+	for (const auto* Actor : OverlappingActors)
+	{
+		TotalMass = TotalMass + Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+	}
+
+	return TotalMass;
 }
 
