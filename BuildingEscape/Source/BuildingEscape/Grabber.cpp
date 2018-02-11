@@ -24,6 +24,7 @@ void UGrabber::Grab()
 	AActor* ActorHit = HitResult.GetActor();
 	if (ActorHit)
 	{
+		if (!PhysicsHandle) { return; }
 		/// if found attached physics handle
 		PhysicsHandle->GrabComponent(
 			ComponentToGrab,
@@ -36,6 +37,7 @@ void UGrabber::Grab()
 
 void UGrabber::Release()
 {
+	if (!PhysicsHandle) { return; }
 	PhysicsHandle->ReleaseComponent();
 }
 
@@ -63,6 +65,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	/// Ray-cast out to reach distance
+	if (!PhysicsHandle) { UE_LOG(LogTemp,Warning,TEXT("Missing physics handler")); }
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(GetReachLineEnd());

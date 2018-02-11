@@ -22,6 +22,11 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
+	if (PressurePlate == nullptr) {
+		FString OwnerName = GetOwner()->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("Missing PressurePlate on %s"), *OwnerName);
+		return;
+	}
 }
 
 void UOpenDoor::OpenDoor()
@@ -44,7 +49,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	float CurrentDoorTime = GetWorld()->GetTimeSeconds();
 	
 	// Poll trigger Volume
-	if(GetTotalMassOfActorsOnPlate() > 25.f)
+	if(GetTotalMassOfActorsOnPlate() > 30.f)
 	{
 		// If the actor that opens is in the volume
 		OpenDoor();
@@ -65,12 +70,18 @@ float UOpenDoor::GetTotalMassOfActorsOnPlate()
 	float TotalMass = 0.f;
 	// iterate overlapping actors
 	TArray<AActor*> OverlappingActors;
+	if (!PressurePlate){ 
+		return TotalMass;
+	}
 	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
 	for (const auto* Actor : OverlappingActors)
 	{
+		FString OwnerName = *Actor->GetName();
+		float ObjectWeight = Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
 		TotalMass = TotalMass + Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		//UE_LOG(LogTemp, Warning, TEXT("%s weighs %f"), *OwnerName,ObjectWeight);
 	}
-
+	
 	return TotalMass;
 }
 
